@@ -1,31 +1,34 @@
+const express = require("express");
+const bodyParser = require("body-parser");
+const TelegramBot = require("node-telegram-bot-api");
 
-import express from "express";
-import TelegramBot from "node-telegram-bot-api";
-
-const token = "YOUR_BOT_TOKEN"; // replace with your actual bot token
-const url = "https://zillax.onrender.com"; // your Render service URL
-
-const bot = new TelegramBot(token, { polling: false });
+const token = "8349700121:AAHzLQoOQ2fFsggbkifm91QH-H0WFPBcsck"; // replace with your bot token from BotFather
+const bot = new TelegramBot(token);
 const app = express();
 
-app.use(express.json());
+app.use(bodyParser.json());
 
-// Set webhook
-bot.setWebHook(`${url}/bot${token}`);
-
-// Handle webhook
+// Webhook endpoint
 app.post(`/bot${token}`, (req, res) => {
   bot.processUpdate(req.body);
   res.sendStatus(200);
 });
 
-// Simple command
+// Handle /start command
 bot.onText(/\/start/, (msg) => {
-  bot.sendMessage(msg.chat.id, "🚀 Zillax bot is live via Render Webhook!");
+  bot.sendMessage(msg.chat.id, "🔥 Welcome to Zillax! Your bot is live.");
 });
 
-// Start server
-const PORT = process.env.PORT || 3000;
+// Default reply for any text
+bot.on("message", (msg) => {
+  if (msg.text !== "/start") {
+    bot.sendMessage(msg.chat.id, "👋 I heard you! Try typing /start.");
+  }
+});
+
+// Render will assign a port
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
