@@ -1,39 +1,42 @@
+require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
-const TelegramBot = require("node-telegram-bot-api");
-require("dotenv").config();
 
 const app = express();
 app.use(bodyParser.json());
 
-const TOKEN = process.env.BOT_TOKEN;
-const SERVER_URL = process.env.SERVER_URL; // e.g. https://zillax.onrender.com
-
-// Create bot instance without polling (we use webhook)
-const bot = new TelegramBot(TOKEN, { polling: false });
-
-// Webhook endpoint for Telegram
-app.post(`/webhook/${TOKEN}`, (req, res) => {
-  bot.processUpdate(req.body);
-  res.sendStatus(200);
+// --- Health route (to confirm service is alive) ---
+app.get("/health", (req, res) => {
+  res.send({ status: "ok", uptime: process.uptime() });
 });
 
-// Example command
-bot.onText(/\/start/, (msg) => {
-  bot.sendMessage(msg.chat.id, "🔥 Welcome to Zillax! 🚀");
-});
-
-// Start server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, async () => {
-  console.log(`Server running on port ${PORT}`);
-
-  // Set webhook when server starts
-  const webhookUrl = `${SERVER_URL}/webhook/${TOKEN}`;
+// --- Example webhook endpoint ---
+app.post("/webhook", (req, res) => {
   try {
-    await bot.setWebHook(webhookUrl);
-    console.log("✅ Webhook set:", webhookUrl);
-  } catch (err) {
-    console.error("❌ Error setting webhook:", err.message);
+    const secret = process.env.WEBHOOK_SECRET;
+    if (!secret) {
+      return res.status(500).send("Webhook secret not set in environment.");
+    }
+
+    console.log("Webhook received:", req.body);
+    res.status(200).send("Webhook received successfully!");
+  } catch (error) {
+    console.error("Error handling webhook:", error);
+    res.status(500).send("Server error.");
   }
+});
+
+// --- Example route using your TOKEN ---
+app.get("/token-check", (req, res) => {
+  const token = process.env.TOKEN;
+  if (!token) {
+    return res.status(500).send("TOKEN not set in environment.");
+  }
+  res.send({ message: "Token loaded successfully!", token: token });
+});
+
+// --- Start server ---
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`🔥 Zillax server is running on port ${PORT}`);
 });
