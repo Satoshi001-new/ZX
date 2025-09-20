@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Zillax — Mini App</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div id="app" class="container">
+    <header class="topbar">
+      <div class="logo">
+        <!-- simple circular dragon SVG -->
+        <svg viewBox="0 0 24 24" class="logo-img" aria-hidden="true">
+          <circle cx="12" cy="12" r="11" fill="#0b0b0b"/>
+          <path d="M6 12c2-4 8-6 10-5s-1 4-1 4 2 2 1 4-6 3-9 0 0-3 0-3" fill="#f6c85f"/>
+        </svg>
+        <div class="brand">
+          <div class="brand-title">Zillax</div>
+          <div class="brand-sub">Dragon Launchpad</div>
+        </div>
+      </div>
+      <div id="user-name" class="user-name"></div>
+    </header>
+
+    <main>
+      <section class="hero card">
+        <h1>Welcome to Zillax</h1>
+        <p class="muted">Launch, discover, and earn — all inside Telegram. Tap the buttons below to get started.</p>
+        <div class="row">
+          <button id="btn-launch" class="btn primary">🚀 Launch Coin</button>
+          <button id="btn-discover" class="btn">🔍 Discover</button>
+        </div>
+      </section>
+
+      <section class="card" id="feed">
+        <h3>Announcements</h3>
+        <div id="announcements">
+          <div class="note">No announcements yet — be the first to launch a coin 🔥</div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="small">Built with Dragon energy — Zillax</div>
+    </footer>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+/* dark, elite styling */
+:root{
+  --bg:#070707;
+  --card:#0f0f10;
+  --accent:#f6c85f;
+  --muted:#9aa0a6;
+  --glass: rgba(255,255,255,0.03);
+}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#020202 0%, #0b0b0b 100%);font-family:Inter,system-ui,Arial;color:#fff}
+.container{max-width:760px;margin:24px auto;padding:12px}
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:10px}
+.logo{display:flex;gap:12px;align-items:center}
+.logo-img{width:56px;height:56px;border-radius:50%}
+.brand-title{font-weight:800;color:var(--accent);font-size:18px}
+.brand-sub{font-size:12px;color:var(--muted)}
+.user-name{font-size:14px;color:var(--muted)}
+.card{background:var(--card);padding:16px;border-radius:14px;margin-top:12px;box-shadow:0 6px 18px rgba(0,0,0,0.6)}
+.hero h1{margin:0 0 6px 0;font-size:22px}
+.muted{color:var(--muted);margin:6px 0 12px 0}
+.row{display:flex;gap:10px}
+.btn{border:none;padding:10px 14px;border-radius:12px;font-weight:700;cursor:pointer;background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.06)}
+.btn.primary{background:linear-gradient(90deg,var(--accent),#ff6745);color:#0b0b0b;border:none}
+.note{padding:8px;border-radius:8px;background:var(--glass);color:var(--muted)}
+.footer{margin-top:20px;text-align:center;color:var(--muted);font-size:12px}
