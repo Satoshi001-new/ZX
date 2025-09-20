@@ -1,42 +1,48 @@
-require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
+const TelegramBot = require("node-telegram-bot-api");
+require("dotenv").config();
 
 const app = express();
 app.use(bodyParser.json());
 
-// --- Health route (to confirm service is alive) ---
-app.get("/health", (req, res) => {
-  res.send({ status: "ok", uptime: process.uptime() });
-});
+// Get your token from environment variables
+const TOKEN = process.env.BOT_TOKEN;
+if (!TOKEN) {
+  console.error("❌ BOT_TOKEN is not set in environment variables");
+  process.exit(1);
+}
 
-// --- Example webhook endpoint ---
+// Create bot in webhook mode
+const bot = new TelegramBot(TOKEN, { polling: false });
+
+// Webhook endpoint
 app.post("/webhook", (req, res) => {
-  try {
-    const secret = process.env.WEBHOOK_SECRET;
-    if (!secret) {
-      return res.status(500).send("Webhook secret not set in environment.");
-    }
-
-    console.log("Webhook received:", req.body);
-    res.status(200).send("Webhook received successfully!");
-  } catch (error) {
-    console.error("Error handling webhook:", error);
-    res.status(500).send("Server error.");
-  }
+  bot.processUpdate(req.body);
+  res.sendStatus(200);
 });
 
-// --- Example route using your TOKEN ---
+// Health check
+app.get("/health", (req, res) => {
+  res.json({ status: "ok", uptime: process.uptime() });
+});
+
+// Token check
 app.get("/token-check", (req, res) => {
-  const token = process.env.TOKEN;
-  if (!token) {
-    return res.status(500).send("TOKEN not set in environment.");
+  if (TOKEN) {
+    res.json({ token: "Token is set!" });
+  } else {
+    res.json({ token: "No token found" });
   }
-  res.send({ message: "Token loaded successfully!", token: token });
 });
 
-// --- Start server ---
+// Example command
+bot.onText(/\/start/, (msg) => {
+  bot.sendMessage(msg.chat.id, "🔥 Welcome to Zillax! 🚀");
+});
+
+// Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🔥 Zillax server is running on port ${PORT}`);
+  console.log(`✅ Server running on port ${PORT}`);
 });
