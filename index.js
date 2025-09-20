@@ -1,35 +1,34 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const TelegramBot = require("node-telegram-bot-api");
+import express from "express";
+import TelegramBot from "node-telegram-bot-api";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 10000;
+app.use(express.json());
 
-// replace this with your bot token
-const TOKEN = process.env.BOT_TOKEN || 8349700121:AAHzLQoOQ2fFsggbkifm91QH-H0WFPBcsck;
+const token = process.env.BOT_TOKEN;
+const url = process.env.WEBHOOK_URL;
+const port = process.env.PORT || 3000;
 
-// bot in webhook mode
-const bot = new TelegramBot(TOKEN, { polling: false });
+// Initialize bot in webhook mode
+const bot = new TelegramBot(token, { webHook: { port } });
 
-// middleware
-app.use(bodyParser.json());
+// Set webhook
+bot.setWebHook(`${url}`);
 
-// webhook endpoint
-app.post(`/webhook/${TOKEN}`, (req, res) => {
+// Handle incoming messages
+bot.on("message", (msg) => {
+  const chatId = msg.chat.id;
+  bot.sendMessage(chatId, "Hello! Your bot is live 🚀");
+});
+
+// Express endpoint for Telegram
+app.post("/webhook", (req, res) => {
   bot.processUpdate(req.body);
   res.sendStatus(200);
 });
 
-// test route
-app.get("/", (req, res) => {
-  res.send("✅ Zillax bot server is running.");
-});
-
-// example: reply to "/start"
-bot.onText(/\/start/, (msg) => {
-  bot.sendMessage(msg.chat.id, "🚀 Welcome to Zillax bot!");
-});
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
 });
