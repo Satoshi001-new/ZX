@@ -1,23 +1,45 @@
-import { useEffect } from "react";
-import useTelegramAuth from "./hooks/useTelegramAuth";
-import { saveProfile } from "./api/saveProfile";
+import React, { useEffect } from "react";
+import { createClient } from "@supabase/supabase-js";
+
+// connect to Supabase with your env variables
+const supabase = createClient(
+  process.env.REACT_APP_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.REACT_APP_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+);
+
+async function syncUser() {
+  // Telegram gives us user info automatically
+  const tg = window.Telegram?.WebApp?.initDataUnsafe?.user;
+  if (!tg) {
+    console.log("No Telegram user found.");
+    return;
+  }
+
+  const { id, username, language_code } = tg;
+
+  // insert or update the user into Supabase
+  const { data, error } = await supabase.from("profiles").upsert({
+    id: id.toString(),
+    username,
+    region: language_code,
+  });
+
+  if (error) {
+    console.error("❌ Error syncing user:", error);
+  } else {
+    console.log("✅ User synced:", data);
+  }
+}
 
 function App() {
-  const user = useTelegramAuth();
-
   useEffect(() => {
-    if (user) {
-      fetch("https://ipapi.co/json/")
-        .then(res => res.json())
-        .then(data => {
-          saveProfile(user, data.country_code);
-        });
-    }
-  }, [user]);
+    syncUser();
+  }, []);
 
   return (
     <div>
-      {user ? <h2>Welcome {user.first_name}!</h2> : <h2>Loading...</h2>}
+      <h1>Zillax Mini App</h1>
+      <p>Telegram login is syncing with Supabase...</p>
     </div>
   );
 }
