@@ -1,21 +1,25 @@
-import { useEffect, useState } from "react";
+import { supabase } from "./supabase";
 
-export default function useTelegramAuth() {
-  const [user, setUser] = useState(null);
+export async function saveTelegramUser(userData) {
+  if (!userData || !userData.id) return;
 
-  useEffect(() => {
-    if (window.Telegram?.WebApp) {
-      const tgUser = window.Telegram.WebApp.initDataUnsafe?.user;
-      if (tgUser) {
-        setUser({
-          id: tgUser.id,
-          username: tgUser.username,
-          first_name: tgUser.first_name,
-          last_name: tgUser.last_name,
-        });
-      }
-    }
-  }, []);
+  const { id, username, first_name, last_name } = userData;
 
-  return user;
+  // Temporary default region (later detect from IP or user choice)
+  const region = "NG";
+
+  const { error } = await supabase.from("profiles").upsert({
+    id,
+    telegram_id: id.toString(),
+    username,
+    first_name,
+    last_name,
+    region,
+  });
+
+  if (error) {
+    console.error("❌ Error saving Telegram user:", error);
+  } else {
+    console.log("✅ Telegram user saved/updated successfully.");
+  }
 }
